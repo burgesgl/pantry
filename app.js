@@ -222,8 +222,7 @@ Respond ONLY with a valid JSON object (no markdown, no backticks) with this exac
   try {
     const response = await fetch(ANTHROPIC_API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+headers: { 'Content-Type': 'application/json', 'x-api-key': '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', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },      body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         messages: [{ role: 'user', content: prompt }],
