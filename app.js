@@ -496,7 +496,50 @@ document.getElementById('item-name').addEventListener('blur', () => {
 document.getElementById('pantry-search').addEventListener('input', renderPantry);
 document.getElementById('library-search').addEventListener('input', renderLibraryTab);
 
+// ── Seed pantry data ───────────────────────────────────────────────────────
+const SEED_PANTRY = [
+  { name: 'Sweet potatoes', category: 'produce', perishable: false },
+  { name: 'Mint', category: 'produce', perishable: true, days: 7 },
+  { name: 'Arugula', category: 'produce', perishable: true, days: 4 },
+  { name: 'Scallions', category: 'produce', perishable: true, days: 7 },
+  { name: 'Kale', category: 'produce', perishable: true, days: 5 },
+  { name: 'Crème fraîche', category: 'dairy', perishable: true, days: 10 },
+  { name: 'Eggs', category: 'dairy', perishable: true, days: 21 },
+  { name: 'Heavy whipping cream', category: 'dairy', perishable: true, days: 10 },
+  { name: 'Buttermilk', category: 'dairy', perishable: true, days: 10 },
+  { name: 'Pork belly (cooked)', category: 'protein', perishable: true, days: 4 },
+  { name: 'Chicken stock', category: 'pantry', perishable: false },
+  { name: 'Brown rice', category: 'grain', perishable: false },
+  { name: 'White rice', category: 'grain', perishable: false },
+  { name: 'Grits', category: 'grain', perishable: false },
+  { name: 'Flour wraps', category: 'grain', perishable: false },
+  { name: 'Oats', category: 'grain', perishable: false },
+  { name: 'Lemon juice', category: 'condiment', perishable: false },
+  { name: 'Cherry grenadine', category: 'condiment', perishable: false },
+  { name: 'Lobster bisque', category: 'pantry', perishable: false },
+  { name: 'Canned collard greens', category: 'pantry', perishable: false },
+  { name: 'Cream of mushroom soup', category: 'pantry', perishable: false },
+  { name: 'Canned asparagus spears', category: 'pantry', perishable: false },
+  { name: 'Canned sweet corn', category: 'pantry', perishable: false },
+  { name: 'Frozen broccoli', category: 'produce', perishable: false },
+];
+
+function seedPantry() {
+  if (state.pantry.length > 0) return; // don't overwrite if already has items
+  const now = Date.now();
+  state.pantry = SEED_PANTRY.map(item => ({
+    id: uid(),
+    name: item.name,
+    category: item.category,
+    perishable: item.perishable,
+    expiresAt: item.perishable ? now + (item.days * 86400000) : null,
+    addedAt: now,
+  }));
+  saveState();
+}
+
 // ── Boot ───────────────────────────────────────────────────────────────────
 loadState();
+seedPantry();
 renderPantry();
 renderLibraryTab();
