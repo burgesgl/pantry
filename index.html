@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Pantry Witch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <span class="nav-icon">🌿</span>
+      <span class="nav-title">The Pantry Witch</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" data-tab="pantry">Pantry</button>
+      <button class="tab-btn" data-tab="recipes">Recipes</button>
+      <button class="tab-btn" data-tab="library">My Library</button>
+    </div>
+  </nav>
+
+  <!-- PANTRY TAB -->
+  <div id="tab-pantry" class="tab-content active">
+    <div class="page-header">
+      <h1>What's in the kitchen?</h1>
+      <p class="page-sub">Keep your pantry honest. Perishables get a timer.</p>
+    </div>
+
+    <div class="pantry-layout">
+      <!-- Add Item Form -->
+      <div class="card add-form">
+        <h3>Add an item</h3>
+        <div class="form-row">
+          <input id="item-name" type="text" placeholder="e.g. Butter, Sage, Lemon…" class="input" />
+          <select id="item-category" class="input select">
+            <option value="produce">🌿 Produce</option>
+            <option value="dairy">🥛 Dairy</option>
+            <option value="protein">🥩 Protein</option>
+            <option value="pantry" selected>🫙 Pantry</option>
+            <option value="spice">✨ Spice</option>
+            <option value="grain">🌾 Grain</option>
+            <option value="condiment">🫒 Condiment</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="checkbox-label">
+            <input id="item-perishable" type="checkbox" />
+            <span>Perishable</span>
+          </label>
+          <div id="expiry-group" class="expiry-group hidden">
+            <label>Expires in</label>
+            <input id="item-days" type="number" min="1" max="90" value="7" class="input input-sm" />
+            <span>days</span>
+          </div>
+        </div>
+        <button id="add-item-btn" class="btn btn-primary">Add to Pantry</button>
+      </div>
+
+      <!-- Perishable Alerts -->
+      <div id="perishable-alerts" class="perishable-alerts hidden">
+        <h3>⏳ Expiring Soon</h3>
+        <div id="alerts-list"></div>
+      </div>
+
+      <!-- Pantry List -->
+      <div class="pantry-sections">
+        <div class="pantry-filter-row">
+          <input id="pantry-search" type="text" placeholder="Search pantry…" class="input input-search" />
+          <div class="category-filters" id="category-filters"></div>
+        </div>
+        <div id="pantry-list" class="pantry-grid"></div>
+        <div id="pantry-empty" class="empty-state hidden">
+          <span>🫙</span>
+          <p>Your pantry is empty. Add something to get started.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate Recipe Button -->
+    <div class="generate-section">
+      <div class="generate-card">
+        <div class="generate-text">
+          <h2>What can I make?</h2>
+          <p>The witch will conjure a recipe from what you have on hand.</p>
+        </div>
+        <button id="generate-btn" class="btn btn-conjure">
+          <span class="conjure-icon">✨</span> Conjure a Recipe
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECIPES TAB -->
+  <div id="tab-recipes" class="tab-content">
+    <div class="page-header">
+      <h1>What the pantry suggests…</h1>
+      <p class="page-sub">Generated from your current ingredients. Save the ones you like.</p>
+    </div>
+    <div id="recipes-container">
+      <div class="empty-state">
+        <span>🌙</span>
+        <p>Head to your pantry and conjure a recipe first.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIBRARY TAB -->
+  <div id="tab-library" class="tab-content">
+    <div class="page-header">
+      <h1>The Recipe Book</h1>
+      <p class="page-sub">Recipes you've saved. Yours to keep.</p>
+    </div>
+    <div class="library-filter-row">
+      <input id="library-search" type="text" placeholder="Search recipes…" class="input input-search" />
+      <div id="tag-filters" class="tag-filters"></div>
+    </div>
+    <div id="library-container" class="recipe-grid"></div>
+    <div id="library-empty" class="empty-state">
+      <span>📖</span>
+      <p>No saved recipes yet. Conjure something and save it.</p>
+    </div>
+  </div>
+</div>
+
+<!-- RECIPE CARD MODAL -->
+<div id="recipe-modal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <button class="modal-close">✕</button>
+    <div id="modal-card"></div>
+    <div class="modal-actions">
+      <button id="modal-save" class="btn btn-primary">Save to Library</button>
+      <button id="modal-share-text" class="btn btn-ghost">💬 Text</button>
+      <button id="modal-share-email" class="btn btn-ghost">📧 Email</button>
+      <button id="modal-generate-new" class="btn btn-ghost">✨ New Recipe</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="loading" class="loading-overlay hidden">
+  <div class="loading-inner">
+    <div class="cauldron">🪄</div>
+    <p id="loading-text">The witch is thinking…</p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
