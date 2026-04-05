@@ -39,6 +39,25 @@ const CAT_ICONS = {
   condiment: '🫒', other: '📦',
 };
 
+// ── Auto-category detection ────────────────────────────────────────────────
+const CAT_KEYWORDS = {
+  produce: ['apple','apples','avocado','banana','basil','beet','bell pepper','broccoli','cabbage','carrot','carrots','celery','cilantro','corn','cucumber','dill','eggplant','garlic','ginger','grape','grapes','green bean','green onion','herb','jalapeño','jalapeno','kale','leek','lemon','lettuce','lime','mint','mushroom','mushrooms','onion','onions','orange','parsley','peach','pear','peas','pepper','peppers','potato','potatoes','radish','rosemary','scallion','shallot','spinach','squash','strawberry','thyme','tomato','tomatoes','zucchini'],
+  dairy: ['butter','buttermilk','cheese','cream','cream cheese','egg','eggs','half and half','heavy cream','kefir','milk','mozzarella','parmesan','ricotta','sour cream','whipping cream','yogurt'],
+  protein: ['bacon','beef','chicken','clam','clams','cod','crab','duck','fish','ground beef','ground turkey','ham','lamb','lobster','pork','prosciutto','salmon','sardine','sausage','scallop','shrimp','steak','tilapia','tofu','tuna','turkey'],
+  grain: ['barley','bread','breadcrumbs','cornmeal','couscous','farro','flour','noodle','noodles','oat','oats','orzo','panko','pasta','quinoa','rice','rye','tortilla','wheat'],
+  spice: ['allspice','bay leaf','black pepper','cardamom','cayenne','chili flake','chili powder','cinnamon','clove','coriander','cumin','curry','garlic powder','ginger powder','nutmeg','onion powder','oregano','paprika','red pepper','saffron','salt','turmeric','vanilla'],
+  condiment: ['fish sauce','hot sauce','ketchup','mayo','mayonnaise','mustard','olive oil','oyster sauce','soy sauce','sriracha','tahini','tamari','vinegar','worcestershire'],
+  pantry: ['bean','beans','broth','can','canned','chickpea','chickpeas','coconut milk','honey','jam','lentil','lentils','maple syrup','molasses','oil','stock','sugar','syrup','tomato paste','tomato sauce'],
+};
+
+function guessCategory(name) {
+  const lower = name.toLowerCase().trim();
+  for (const [cat, keywords] of Object.entries(CAT_KEYWORDS)) {
+    if (keywords.some(k => lower.includes(k))) return cat;
+  }
+  return null;
+}
+
 // ── Days until expiry ──────────────────────────────────────────────────────
 function daysUntil(ts) {
   if (!ts) return null;
@@ -203,7 +222,8 @@ Respond ONLY with a valid JSON object (no markdown, no backticks) with this exac
   try {
     const response = await fetch(ANTHROPIC_API, {
       method: 'POST',
-headers: { 'Content-Type': 'application/json', 'x-api-key': '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', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },      body: JSON.stringify({
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         messages: [{ role: 'user', content: prompt }],
@@ -463,6 +483,14 @@ document.getElementById('item-name').addEventListener('keydown', e => { if (e.ke
 // Perishable checkbox
 document.getElementById('item-perishable').addEventListener('change', e => {
   document.getElementById('expiry-group').classList.toggle('hidden', !e.target.checked);
+});
+
+// Auto-category on name blur
+document.getElementById('item-name').addEventListener('blur', () => {
+  const name = document.getElementById('item-name').value;
+  if (!name) return;
+  const cat = guessCategory(name);
+  if (cat) document.getElementById('item-category').value = cat;
 });
 
 // Pantry search
